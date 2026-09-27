@@ -125,6 +125,23 @@ await step('el ranking aparece en la landing de inicio', async () => {
   return txt.includes('Test Hunter');
 });
 
+await step('reset del ranking: pide confirmación y borra los datos', async () => {
+  await page.getByRole('button', { name: /Récords/ }).click();
+  await page.getByRole('button', { name: /Borrar ranking/ }).waitFor({ timeout: 5000 });
+  // Cancelar no debe borrar nada
+  await page.getByRole('button', { name: /Borrar ranking/ }).click();
+  await page.getByRole('button', { name: /Cancelar/ }).click();
+  let raw = await page.evaluate(() => localStorage.getItem('caza-en-el-cielo-records-v1'));
+  if (!raw || JSON.parse(raw).ranking.length === 0) return false;
+  // Confirmar sí borra: clave eliminada y mensaje de vacío visible
+  await page.getByRole('button', { name: /Borrar ranking/ }).click();
+  await page.getByRole('button', { name: /Sí, borrar todo/ }).click();
+  raw = await page.evaluate(() => localStorage.getItem('caza-en-el-cielo-records-v1'));
+  const emptyMsg = await page.getByText('Aún no hay marcas').count();
+  await page.getByRole('button', { name: /^Cerrar$/ }).click();
+  return raw === null && emptyMsg > 0;
+});
+
 await step('el nombre se recuerda para la próxima partida', async () => {
   await page.getByRole('button', { name: /Jugar/ }).click();
   await page.locator('.hunter-input').waitFor({ timeout: 5000 });

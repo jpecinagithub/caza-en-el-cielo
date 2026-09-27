@@ -148,6 +148,15 @@ export function saveRecords(records) {
   }
 }
 
+// Borra todos los datos del ranking (entradas y contador de partidas)
+export function clearRecords() {
+  try {
+    localStorage.removeItem(RECORDS_KEY)
+  } catch {
+    // idem
+  }
+}
+
 // Inserta una entrada en el ranking (descendente por puntos, top MAX_RANKING).
 // Devuelve el ranking nuevo y la posición (0-based) o -1 si no entra.
 export function insertRanking(ranking, entry) {

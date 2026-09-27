@@ -7,7 +7,7 @@ import HunterName from './components/HunterName.jsx'
 import GameOver, { RecordsView } from './components/GameOver.jsx'
 import {
   loadSettings, saveSettings,
-  loadRecords, saveRecords, insertRanking,
+  loadRecords, saveRecords, insertRanking, clearRecords,
   loadHunter, saveHunter,
 } from './game/config.js'
 
@@ -100,6 +100,12 @@ export default function App() {
     engineRef.current?.newGame()
   }, [])
 
+  // Reset del ranking: borra entradas y contador de partidas (pide confirmación en la UI)
+  const resetRecords = useCallback(() => {
+    clearRecords()
+    setRecords({ ranking: [], games: 0 })
+  }, [])
+
   return (
     <div className="app">
       {screen === 'menu' && (
@@ -188,6 +194,7 @@ export default function App() {
           ranking={records.ranking}
           games={records.games}
           onClose={() => setRecordsOpen(false)}
+          onReset={resetRecords}
         />
       )}
     </div>

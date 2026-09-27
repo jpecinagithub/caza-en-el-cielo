@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { MAX_RANKING } from '../game/config.js'
 
 // RecordsView: ranking completo de mejores puntuaciones (top 10)
-export function RecordsView({ ranking, games, onClose }) {
+// Incluye botón de reset con confirmación en dos pasos para borrarlo todo.
+export function RecordsView({ ranking, games, onClose, onReset }) {
+  const [confirming, setConfirming] = useState(false)
+
+  const doReset = () => {
+    onReset()
+    setConfirming(false)
+  }
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -25,6 +33,22 @@ export function RecordsView({ ranking, games, onClose }) {
         ) : (
           <p className="records-empty">Aún no hay marcas. ¡Sal a cazar y vuelve con un récord!</p>
         )}
+
+        {ranking.length > 0 && !confirming && (
+          <button className="btn btn-danger btn-block" onClick={() => setConfirming(true)}>
+            🗑&nbsp; Borrar ranking
+          </button>
+        )}
+        {confirming && (
+          <div className="reset-confirm">
+            <p>¿Seguro que quieres borrar <strong>todo</strong> el ranking?<br />No se puede deshacer.</p>
+            <div className="menu-buttons">
+              <button className="btn btn-danger" onClick={doReset}>Sí, borrar todo</button>
+              <button className="btn" onClick={() => setConfirming(false)}>Cancelar</button>
+            </div>
+          </div>
+        )}
+
         <button className="btn btn-primary btn-block" onClick={onClose}>Cerrar</button>
       </div>
     </div>
